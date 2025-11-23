@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0f172a; /* 对应 vpn-bg */
+  color: #e2e8f0;
+  overflow: hidden; /* 禁止滚动条，像原生应用一样 */
+  user-select: none; /* 禁止用户选中文本 */
+}

@@ -1,0 +1,34 @@
+sips -z 32 32     icon-win.png --out build/myicon.iconset/icon_16x16@2x.png
+sips -z 32 32     icon-win.png --out build/myicon.iconset/icon_32x32.png
+sips -z 64 64     icon-win.png --out build/myicon.iconset/icon_32x32@2x.png
+sips -z 128 128   icon-win.png --out build/myicon.iconset/icon_128x128.png
+sips -z 256 256   icon-win.png --out build/myicon.iconset/icon_128x128@2x.png
+sips -z 256 256   icon-win.png --out build/myicon.iconset/icon_256x256.png
+sips -z 512 512   icon-win.png --out build/myicon.iconset/icon_256x256@2x.png
+sips -z 512 512   icon-win.png --out build/myicon.iconset/icon_512x512.png
+cp icon-win.png          build/myicon.iconset/icon_512x512@2x.png˙
+
+dalen ALL=(ALL) NOPASSWD: /opt/homebrew/bin/wg-quick, /usr/local/bin/wg-quick
+
+下面是需要调整的点：
+1.浅色主题的文字配色和背景配色不协调，导致文字看起来对比度不够
+2.安装后第一次打开默认为深色主题，之后关闭打开如果设置过主题则继承设置的主题，如果没设置过默认还是深色主题
+3.我需要程序安装后的第一次打开询问授权密码，之后的关闭打开都不再重复授权 
+我需要你根据这三个条件 对代码进行调整，只输出变化的文件的完整代码即可
+
+
+我想用vue+vite+pinia+ts+rust的方式开发这个mac清理垃圾文件的程序
+现在根据你之前设计的步骤从头开始开发，请输出较详细的步骤，和文件结构，配置文件内容，代码通过完整文件为单位提供给我，不要代码片段
+
+
+1.解决图片上的报错
+2.今天早晨我连接后，还能访问外网  但下午虽然能连接成功  也有上传下载速度动态变动   就是不能访问外网
+
+
+现在点击链接的时候报这个错   我查了服务器的sysctl net.ipv4.ip_forward
+sysctl net.ipv6.conf.all.forwarding
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 1
+root@iZrj9cmu2h748u74exzcw5Z:~#、
+
+连接后浏览器google.com可以访问  chatgpt.com,https://lmarena.ai/都无法访问  我的中转服务器三个网址都能ping通

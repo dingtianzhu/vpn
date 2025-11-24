@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import ConnectButton from '../components/Dashboard/ConnectButton'
+// src/pages/Home.tsx
+import React, { useEffect, useState } from 'react'
 import { FaArrowUp, FaArrowDown, FaMapMarkerAlt } from 'react-icons/fa'
-import type { VpnStatus } from '../types'
-import type { ServerNode } from '../data/servers'
-
-interface HomeProps {
-  currentServer: ServerNode
-  onChangeServerRequest: () => void
-}
+import ConnectButton from '../components/Dashboard/ConnectButton'
+import { useVpn } from '../hooks/useVpn'
 
 interface StatsState {
   ip: string
-  download: number // MB/s
-  upload: number   // MB/s
-  latency: number  // ms
+  download: number
+  upload: number
+  latency: number
 }
 
 const initialStats: StatsState = {
@@ -23,38 +18,15 @@ const initialStats: StatsState = {
   latency: 0,
 }
 
-const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => {
-  const [status, setStatus] = useState<VpnStatus>('disconnected')
+const Home: React.FC = () => {
+  const { status, isBusy, currentServer, connectOrToggle, error } = useVpn()
   const [stats, setStats] = useState<StatsState>(initialStats)
 
-  // 监听主进程发回的 VPN 状态
-  useEffect(() => {
-    if (!window.electron) return
-
-    const unsubscribe = window.electron.ipcRenderer.onStatusChange(
-      (newStatus: string) => {
-        if (
-          newStatus === 'connected' ||
-          newStatus === 'disconnected' ||
-          newStatus === 'connecting'
-        ) {
-          setStatus(newStatus as VpnStatus)
-        }
-      },
-    )
-
-    return () => {
-      // @ts-ignore
-      if (typeof unsubscribe === 'function') unsubscribe()
-    }
-  }, [])
-
-  // 根据连接状态，动态刷新 IP / 上下行 / 延迟
+  // IP + 速率/延迟动态模拟
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null
 
     if (status === 'connected') {
-      // 1) 刚连上的时候，查一次公网 IP
       fetch('https://api.ipify.org?format=json')
         .then((res) => res.json())
         .then((data) => {
@@ -64,25 +36,23 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
           setStats((prev) => ({ ...prev, ip: 'Unknown' }))
         })
 
-      // 2) 启动一个定时器，每秒模拟刷新一次速率和延迟
       timer = setInterval(() => {
         setStats((prev) => {
-          // 模拟下载/上传：给一点波动，让界面看起来“活着”
           const nextDown = Math.max(
             0,
             prev.download + (Math.random() - 0.4) * 5,
-          ) // ±2MB/s 左右波动
-          const nextUp = Math.max(0, prev.upload + (Math.random() - 0.4) * 1.5)
-
-          // 模拟延迟：围绕当前服务器的基准 ping 上下浮动
+          )
+          const nextUp = Math.max(
+            0,
+            prev.upload + (Math.random() - 0.4) * 1.5,
+          )
           const basePing = currentServer.ping || 60
           const nextLatency = Math.max(
             5,
             basePing + (Math.random() - 0.5) * 20,
           )
-
           return {
-            ...prev,
+            ip: prev.ip,
             download: parseFloat(nextDown.toFixed(2)),
             upload: parseFloat(nextUp.toFixed(2)),
             latency: Math.round(nextLatency),
@@ -90,7 +60,6 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
         })
       }, 1000)
     } else {
-      // 断开时重置
       setStats(initialStats)
     }
 
@@ -99,37 +68,12 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
     }
   }, [status, currentServer])
 
-  const handleConnect = async () => {
-    if (!window.electron) {
-      alert('Electron 环境未加载，无法发起连接')
-      return
-    }
-
-    if (status === 'disconnected') {
-      setStatus('connecting')
-      try {
-        await window.electron.ipcRenderer.connectVpn(currentServer.config)
-      } catch (err: any) {
-        console.error('连接失败:', err)
-        const message: string = err?.message || String(err)
-
-        if (message.includes('User did not grant permission')) {
-          setStatus('disconnected')
-          return
-        }
-
-        setStatus('disconnected')
-        alert('连接失败：' + message)
-      }
-    } else {
-      try {
-        await window.electron.ipcRenderer.disconnectVpn()
-      } catch (err) {
-        console.error('断开失败:', err)
-        setStatus('disconnected')
-      }
-    }
-  }
+  const statusText =
+    status === 'connected'
+      ? 'SECURE CONNECTION ACTIVE'
+      : status === 'connecting'
+      ? 'CONNECTING...'
+      : 'UNPROTECTED'
 
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden h-full">
@@ -145,19 +89,19 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
               : 'border-vpn-danger text-vpn-danger'
           }`}
         >
-          {status === 'connected' ? 'SECURE CONNECTION ACTIVE' : 'UNPROTECTED'}
+          {statusText}
         </div>
       </div>
 
       {/* 中间主体 */}
       <div className="flex-1 flex flex-col items-center justify-center z-10 gap-8">
-        <ConnectButton status={status} onClick={handleConnect} />
+        <ConnectButton
+          status={status}
+          onClick={connectOrToggle}
+          disabled={isBusy}
+        />
 
-        {/* 选中服务器 + 切换入口 */}
-        <button
-          onClick={onChangeServerRequest}
-          className="flex items-center gap-3 px-6 py-3 bg-vpn-panel rounded-2xl border border-white/5 hover:bg-white/10 transition-all cursor-pointer"
-        >
+        <button className="flex items-center gap-3 px-6 py-3 bg-vpn-panel rounded-2xl border border-white/5 hover:bg-white/10 transition-all cursor-pointer">
           <span className="text-3xl">{currentServer.flag}</span>
           <div className="text-left">
             <div className="text-xs text-vpn-muted">Selected Server</div>
@@ -167,9 +111,15 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
           </div>
           <FaMapMarkerAlt className="text-vpn-primary ml-2" />
         </button>
+
+        {error && (
+          <div className="mt-4 text-sm text-red-400 max-w-md text-center">
+            {error}
+          </div>
+        )}
       </div>
 
-      {/* 底部统计：下载 / 上传 / 延迟 / IP */}
+      {/* 底部统计栏 */}
       <div className="h-24 bg-vpn-panel/50 backdrop-blur-md border-t border-white/5 grid grid-cols-4 divide-x divide-white/5">
         <StatItem
           icon={<FaArrowDown />}
@@ -212,7 +162,6 @@ const Home: React.FC<HomeProps> = ({ currentServer, onChangeServerRequest }) => 
   )
 }
 
-// 小组件：底部每一格统计
 const StatItem: React.FC<{
   icon: React.ReactNode
   label: string

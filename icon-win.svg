@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <!-- 背景：圆角方块 + 渐变（右上 -> 左下） -->
+  <defs>
+    <linearGradient id="winGradient" x1="100%" y1="0%" x2="0%" y2="100%">
+      <!-- 右上：偏暖橘色 -->
+      <stop offset="0%" stop-color="#FF9F5A"/>
+      <!-- 中间：橙粉过渡 -->
+      <stop offset="45%" stop-color="#FF7E73"/>
+      <!-- 左下：偏暖蓝青 -->
+      <stop offset="100%" stop-color="#2AA8FF"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="32" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- 背景圆角矩形 -->
+  <rect x="80" y="80" width="864" height="864" rx="220"
+        fill="url(#winGradient)"
+        filter="url(#softShadow)"/>
+
+  <!-- 中心的 W -->
+  <text x="50%" y="50%"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        font-size="520"
+        font-weight="800"
+        fill="#FFFFFF">
+    W
+  </text>
+</svg>

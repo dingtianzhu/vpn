@@ -3,12 +3,13 @@ import { motion } from 'framer-motion'
 import { FaPowerOff } from 'react-icons/fa'
 import type { VpnStatus } from '../../types'
 
-interface ConnectButtonProps {
+interface Props {
   status: VpnStatus
   onClick: () => void
+  disabled?: boolean
 }
 
-const ConnectButton: React.FC<ConnectButtonProps> = ({ status, onClick }) => {
+const ConnectButton: React.FC<Props> = ({ status, onClick, disabled }) => {
   const styles: Record<
     VpnStatus,
     { border: string; icon: string; shadow: string; text: string }
@@ -33,13 +34,18 @@ const ConnectButton: React.FC<ConnectButtonProps> = ({ status, onClick }) => {
     },
   }
 
-  const currentStyle = styles[status]
+  const current = styles[status]
 
   return (
-    <div className="relative group cursor-pointer" onClick={onClick}>
+    <div
+      className={`relative group cursor-pointer ${
+        disabled ? 'opacity-60 cursor-not-allowed' : ''
+      }`}
+      onClick={() => !disabled && onClick()}
+    >
       {(status === 'connecting' || status === 'connected') && (
         <motion.div
-          className={`absolute inset-0 rounded-full bg-inherit z-0 ${currentStyle.shadow}`}
+          className={`absolute inset-0 rounded-full bg-inherit z-0 ${current.shadow}`}
           initial={{ scale: 1, opacity: 0.5 }}
           animate={{ scale: 1.2, opacity: 0 }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -47,15 +53,15 @@ const ConnectButton: React.FC<ConnectButtonProps> = ({ status, onClick }) => {
       )}
 
       <div
-        className={`relative z-10 w-48 h-48 rounded-full border-4 bg-vpn-panel flex flex-col items-center justify-center transition-all duration-500 ${currentStyle.border} ${currentStyle.shadow}`}
+        className={`relative z-10 w-48 h-48 rounded-full border-4 bg-vpn-panel flex flex-col items-center justify-center transition-all duration-500 ${current.border} ${current.shadow}`}
       >
         <FaPowerOff
-          className={`text-5xl mb-2 transition-colors duration-500 ${currentStyle.icon}`}
+          className={`text-5xl mb-2 transition-colors duration-500 ${current.icon}`}
         />
         <span
-          className={`text-sm font-bold tracking-widest ${currentStyle.icon}`}
+          className={`text-sm font-bold tracking-widest ${current.icon}`}
         >
-          {currentStyle.text}
+          {current.text}
         </span>
       </div>
     </div>

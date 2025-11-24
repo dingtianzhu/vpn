@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <!-- 渐变定义：橘色 -> 橙粉 -> 暖蓝 -->
+  <defs>
+    <linearGradient id="macGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <!-- 左上：暖橘 -->
+      <stop offset="0%" stop-color="#FF9F5A"/>
+      <!-- 中间：橙粉 -->
+      <stop offset="45%" stop-color="#FF7E73"/>
+      <!-- 右下：暖蓝 -->
+      <stop offset="100%" stop-color="#2AA8FF"/>
+    </linearGradient>
+
+    <!-- 柔和阴影 -->
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="32"
+                    flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- 背景：填满视图的圆角方块（非透明） -->
+  <rect x="64" y="64" width="896" height="896" rx="220"
+        fill="url(#macGradient)"
+        filter="url(#softShadow)"/>
+
+  <!-- 中间的字母 M -->
+  <text x="50%" y="50%"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif"
+        font-size="520"
+        font-weight="800"
+        fill="#FFFFFF">
+    M
+  </text>
+</svg>

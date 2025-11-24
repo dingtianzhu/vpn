@@ -2,9 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 通过 CSS 变量统一控制深色/浅色主题的核心颜色 */
+:root {
+  /* 深色主题默认值 */
+  --vpn-bg: #0f172a;        /* 背景 */
+  --vpn-panel: #1e293b;     /* 面板 */
+  --vpn-text: #e2e8f0;      /* 主文字 */
+  --vpn-muted: #94a3b8;     /* 次要文字 */
+}
+
+/* 浅色主题：背景更亮，文字更深，面板白色，保证对比度 */
+[data-theme='light'] {
+  --vpn-bg: #f4f7fb;        /* 整体背景：柔和蓝灰 */
+  --vpn-panel: #ffffff;     /* 面板背景：纯白，和背景有明显区分 */
+  --vpn-text: #0f172a;      /* 主文字：接近黑色，易读 */
+  --vpn-muted: #64748b;     /* 次要文字：较深的灰蓝 */
+}
+
 body {
-  background-color: #0f172a; /* 对应 vpn-bg */
-  color: #e2e8f0;
-  overflow: hidden; /* 禁止滚动条，像原生应用一样 */
-  user-select: none; /* 禁止用户选中文本 */
+  background-color: var(--vpn-bg);
+  color: var(--vpn-text);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* 覆盖 Tailwind 生成的同名类，让它们跟随 CSS 变量变化 */
+.bg-vpn-bg {
+  background-color: var(--vpn-bg) !important;
+}
+
+.bg-vpn-panel {
+  background-color: var(--vpn-panel) !important;
+}
+
+.text-vpn-text {
+  color: var(--vpn-text) !important;
+}
+
+.text-vpn-muted {
+  color: var(--vpn-muted) !important;
 }

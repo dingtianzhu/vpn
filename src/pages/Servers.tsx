@@ -1,13 +1,11 @@
 import React from 'react'
-import { SERVER_LIST, ServerNode } from '../data/servers'
+import { SERVER_LIST } from '../data/servers'
+import { useVpn } from '../hooks/useVpn'
 import { FaCheck, FaSignal } from 'react-icons/fa'
 
-interface ServersProps {
-  currentServer: ServerNode
-  onSelect: (server: ServerNode) => void
-}
+const Servers: React.FC = () => {
+  const { currentServer, setCurrentServer } = useVpn()
 
-const Servers: React.FC<ServersProps> = ({ currentServer, onSelect }) => {
   return (
     <div className="h-full flex flex-col p-6">
       <h1 className="text-2xl font-bold mb-6">Select Location</h1>
@@ -16,7 +14,7 @@ const Servers: React.FC<ServersProps> = ({ currentServer, onSelect }) => {
         {SERVER_LIST.map((server) => (
           <button
             key={server.id}
-            onClick={() => onSelect(server)}
+            onClick={() => setCurrentServer(server)}
             className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${
               currentServer.id === server.id
                 ? 'bg-vpn-primary/10 border-vpn-primary'
